@@ -1,0 +1,47 @@
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+import { PanelRow, TextControl, Icon } from '@wordpress/components';
+import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
+import { useState } from '@wordpress/element';
+import { link } from '@wordpress/icons';
+
+/**
+ * Internal dependencies
+ */
+import './editor.scss';
+
+/**
+ * {{properCase gutenbergPluginSlug}}
+ *
+ * @example
+ * ```js
+ * import {{properCase gutenbergPluginSlug}} from './edit';
+ *
+ * <{{properCase gutenbergPluginSlug}} />
+ * ```
+ *
+ * @returns {React.ReactElement}
+ */
+export default function {{properCase gutenbergPluginSlug}}() {
+  const [textInput, setTextInput] = useState('');
+
+  return (
+    <PluginDocumentSettingPanel
+      name="{{gutenbergPluginSlug}}"
+      title={__('{{sentenceCase gutenbergPluginSlug}}', '{{pluginSlug}}')}
+      icon={<Icon icon={link} />}
+      className="{{gutenbergPluginSlug}}-panel"
+    >
+      <PanelRow>
+        <TextControl
+          label={__('Some Input', '{{pluginSlug}}')}
+          value={textInput}
+          onChange={(value) => setTextInput(value)}
+          hideLabelFromVision={true}
+        />
+      </PanelRow>
+    </PluginDocumentSettingPanel>
+  );
+}

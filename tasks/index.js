@@ -4,6 +4,7 @@
 import * as plugin from './plugin.js';
 import * as rest from './rest.js';
 import * as gutenberg from './gutenberg.js';
+import * as postPluginCreation from './post-plugin-creation.js';
 
 // Combine all prompts from different task modules
 export const prompts = [
@@ -21,11 +22,7 @@ export const actions = (data) => [
   ...plugin.actions(data),
   ...rest.actions(data),
   ...gutenberg.actions(data),
-  {
-    type: 'installNpmDeps',
-    message: 'Installing npm dependencies...',
-    dependencies: ['@wordpress/scripts'],
-  },
+  ...postPluginCreation.actions(data),
 ];
 
 // Export default object with combined prompts and actions

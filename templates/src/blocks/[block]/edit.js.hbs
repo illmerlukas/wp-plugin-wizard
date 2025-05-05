@@ -7,12 +7,12 @@ import { useBlockProps } from '@wordpress/block-editor';
 /**
  * Internal dependencies
  */
-import './style.scss';
+import './editor.scss';
 
 export default function Edit({}) {
   return (
     <div {...useBlockProps()}>
-      {__('Hello World', 'russmedia-example-block')}
+      {__('Hello World', '{{pluginSlug}}')}
     </div>
   );
 }

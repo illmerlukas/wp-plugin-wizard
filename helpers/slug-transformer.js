@@ -60,23 +60,28 @@ export const logDryRunPreview = (plop, { pluginSlug }) => {
  * @param {object} plop - Plop instance
  */
 export const setupHelpers = (plop) => {
-  // "russmedia-test-plugin" to "Rusmedia\Test\Plugin"
+  // "my-test-plugin" to "My\Test\Plugin"
   plop.setHelper('namespace', function (text) {
     return toNamespace(text);
   });
 
-  // "russmedia-test-plugin" to "Rusmedia\\Test\\Plugin"
+  // "my-test-plugin" to "My\\Test\\Plugin"
   plop.setHelper('namespaceEscaped', function (text) {
     return toNamespace(text).replace(/\\/g, '\\\\');
   });
 
-  // "russmedia-test-plugin" to "Rusmedia_Test_Plugin"
+  // "my-test-plugin" to "My_Test_Plugin"
   plop.setHelper('packageName', function (text) {
     return toPackageName(text);
   });
 
-  // "russmedia-test-plugin" to "russmedia/test-plugin"
+  // "my-test-plugin" to "my/test/plugin"
   plop.setHelper('packageNameSlug', function (text) {
     return text.replace(/-/g, '/');
+  });
+
+  // Check if an array includes a value
+  plop.setHelper('includes', function (array, value) {
+    return array.includes(value);
   });
 };

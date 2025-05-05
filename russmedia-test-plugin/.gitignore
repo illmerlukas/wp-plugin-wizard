@@ -1,4 +1,0 @@
-tests/coverage-report/
-vendor/
-node_modules/
-.phpunit.result.cache

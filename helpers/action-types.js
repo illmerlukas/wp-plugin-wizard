@@ -7,7 +7,7 @@ import chalk from 'chalk';
  * @param {string} pluginSlug - The slug of the plugin to install dependencies for
  * @returns {Promise} - A promise that resolves when the installation is complete
  */
-export const installNpmDependencies = (pluginSlug, dependencies = []) => {
+const installNpmDependencies = (pluginSlug, dependencies = []) => {
   return new Promise((resolve, reject) => {
     console.log(
       chalk.blue(`\nInstalling npm dependencies for ${pluginSlug}...`)
@@ -38,3 +38,21 @@ export const installNpmDependencies = (pluginSlug, dependencies = []) => {
     );
   });
 };
+
+const setupActionTypes = (plop) => {
+  // Add a post-generation hook to install npm dependencies
+  plop.setActionType('installNpmDeps', (answers) => {
+    if (process.argv.includes('--dry-run')) {
+      return 'Skipping npm install in dry run mode';
+    }
+
+    return installNpmDependencies(answers.pluginSlug, ['@wordpress/scripts'])
+      .then(() => chalk.green('✅ NPM dependencies installed successfully'))
+      .catch((err) => {
+        console.error(err);
+        return chalk.red('❌ Failed to install NPM dependencies');
+      });
+  });
+};
+
+export { setupActionTypes };

@@ -1,4 +1,9 @@
 /**
  * Internal dependencies
  */
+{{#if (includes gutenbergFeatures 'Block')}}
 import './blocks';
+{{/if}}
+{{#if (includes gutenbergFeatures 'Meta Box')}}
+import './plugins';
+{{/if}}
