@@ -2,8 +2,11 @@
   "name": "wp-plugin-wizard",
   "version": "1.0.0",
   "description": "Scaffold generator for WordPress plugins using Plop.js",
-  "main": "plopfile.js",
+  "main": "index.js",
   "type": "module",
+  "bin": {
+    "create-wp-plugin": "./index.js"
+  },
   "scripts": {
     "plop": "plop"
   },
@@ -18,6 +21,7 @@
   "license": "MIT",
   "devDependencies": {
     "chalk": "^5.4.1",
+    "minimist": "^1.2.8",
     "plop": "^3.1.2"
   }
 }
