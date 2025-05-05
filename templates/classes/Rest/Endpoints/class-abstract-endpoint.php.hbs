@@ -1,0 +1,200 @@
+<?php
+/**
+ * Abstract_Endpoint abstract class definition.
+ *
+ * @package     {{packageName pluginSlug}}
+ */
+
+namespace {{namespace pluginSlug}}\Rest\Endpoints;
+
+use {{namespace pluginSlug}}\Settings;
+use {{namespace pluginSlug}}\Utils;
+use WP_REST_Request;
+use WP_REST_Server;
+
+/**
+ * Base abstract class for our WordPress REST API Endpoints.
+ */
+abstract class Abstract_Endpoint implements Interface_Endpoint {
+
+	/**
+	 * The plugin settings.
+	 *
+	 * @access protected
+	 * @var    Settings
+	 */
+	protected $settings;
+
+	/**
+	 * The utils.
+	 *
+	 * @access protected
+	 * @var    Utils
+	 */
+	protected $utils;
+
+	/**
+	 * The arguments definition for the endpoint.
+	 *
+	 * @access protected
+	 * @var    array
+	 */
+	protected $arguments = array();
+
+	/**
+	 * The methods definition of the endpoint.
+	 *
+	 * @access protected
+	 * @var    string
+	 */
+	protected $methods = WP_REST_Server::READABLE;
+
+	/**
+	 * The path definition of the endpoint.
+	 *
+	 * @access protected
+	 * @var    string
+	 */
+	protected $path = '';
+
+	/**
+	 * The cache group.
+	 *
+	 * @access protected
+	 * @var string
+	 */
+	protected $cache_group = '{{pluginSlug}}';
+
+
+	/**
+	 * Constructor with settings.
+	 *
+	 * @access public
+	 * @param Settings      $settings The settings.
+	 * @param Utils         $utils The utils.
+	 *
+	 * @return void
+	 */
+	public function __construct( Settings $settings, Utils $utils ) {
+		$this->settings      = $settings;
+		$this->utils         = $utils;
+	}
+
+	/**
+	 * Return the arguments configuration of the endpoint.
+	 *
+	 * @access public
+	 * @return array
+	 */
+	public function get_arguments() {
+		return $this->arguments;
+	}
+
+	/**
+	 * Return the allowed method of the endpoint.
+	 *
+	 * @access public
+	 * @return string
+	 */
+	public function get_methods() {
+		return $this->methods;
+	}
+
+	/**
+	 * Returns the path of the endpoint.
+	 *
+	 * @access public
+	 * @return string
+	 */
+	public function get_path() {
+		return $this->path;
+	}
+
+	/**
+	 * Here we would be able to pass a permission callback.
+	 * Only users with the capability 'edit_posts' are allowed to access this endpoint.
+	 *
+	 * @access public
+	 * @return callable
+	 */
+	public function get_permission_callback() {
+		return function() {
+			return current_user_can( 'edit_posts' );
+		};
+	}
+
+	/**
+	 * Get cache group.
+	 *
+	 * @access public
+	 * @return string
+	 */
+	public function get_cache_group() {
+		return $this->cache_group;
+	}
+
+	/**
+	 * Get the callback used by the REST API endpoint.
+	 *
+	 * @access public
+	 * @return callable
+	 */
+	final public function get_callback() {
+		return array( $this, 'respond' );
+	}
+
+
+	/**
+	 * This method should actually handle the response.
+	 *
+	 * @access public
+	 * @param \WP_REST_Request $request The REST request.
+	 * @return mixed
+	 */
+	abstract public function respond( \WP_REST_Request $request );
+
+	/**
+	 * Filter out params that were not defined in $arguments.
+	 *
+	 * @access protected
+	 * @param WP_REST_Request $request The REST request.
+	 * @param array           $arguments The arguments to filter.
+	 * @return array The filtered parameters.
+	 */
+	protected function filter_request_parameters( WP_REST_Request $request, array $arguments ): array {
+		return array_filter(
+			$request->get_params(),
+			function( $key ) use ( $arguments ) {
+				if ( array_key_exists( $key, $arguments ) ) {
+					return true;
+				}
+				return false;
+			},
+			ARRAY_FILTER_USE_KEY
+		);
+	}
+
+	/**
+	 * Get a value from the cache.
+	 *
+	 * @access protected
+	 * @param string $key The key to get.
+	 * @return mixed
+	 */
+	protected function cache_get( string $key ) {
+		return wp_cache_get( $key, $this->cache_group );
+	}
+
+	/**
+	 * Set a value in the cache.
+	 *
+	 * @access protected
+	 * @param string $key The key to set.
+	 * @param mixed  $value The value to set.
+	 * @param int    $expiration The expiration time in seconds.
+	 * @return bool
+	 */
+	protected function cache_set( string $key, $value, int $expiration = 0 ) {
+		return wp_cache_set( $key, $value, $this->cache_group, $expiration );
+	}
+}

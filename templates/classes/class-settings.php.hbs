@@ -1,0 +1,66 @@
+<?php
+/**
+ * File for handling the plugin settings.
+ *
+ * @package     {{packageName pluginSlug}}
+ */
+
+namespace {{namespace pluginSlug}};
+
+/**
+ * The settings class.
+ */
+class Settings {
+
+	/**
+	 * The plugin settings.
+	 *
+	 * @access private
+	 * @var    array
+	 */
+	private $settings = array();
+
+	/**
+	 * Constructor.
+	 */
+	public function __construct() {
+		$this->load_settings();
+	}
+
+	/**
+	 * Load settings from the database.
+	 */
+	private function load_settings() {
+		$this->settings = get_option( '{{pluginSlug}}_settings', array() );
+	}
+
+	/**
+	 * Get a setting.
+	 *
+	 * @param string $key     The setting key.
+	 * @param mixed  $default The default value.
+	 * @return mixed
+	 */
+	public function get( string $key, $default = null ) {
+		return isset( $this->settings[ $key ] ) ? $this->settings[ $key ] : $default;
+	}
+
+	/**
+	 * Set a setting.
+	 *
+	 * @param string $key   The setting key.
+	 * @param mixed  $value The setting value.
+	 * @return void
+	 */
+	public function set( string $key, $value ) {
+		$this->settings[ $key ] = $value;
+		$this->save();
+	}
+
+	/**
+	 * Save settings to the database.
+	 */
+	private function save() {
+		update_option( '{{pluginSlug}}_settings', $this->settings );
+	}
+} 

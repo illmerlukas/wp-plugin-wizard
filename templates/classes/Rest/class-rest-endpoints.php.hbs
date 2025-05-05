@@ -1,0 +1,156 @@
+<?php
+/**
+ * File for registering the REST endpoints.
+ *
+ * @package     {{packageName pluginSlug}}
+ */
+
+namespace {{namespace pluginSlug}}\Rest;
+
+use {{namespace pluginSlug}}\Rest\Endpoints;
+use {{namespace pluginSlug}}\Settings;
+use {{namespace pluginSlug}}\Utils;
+
+/**
+ * The plugins rest routes.
+ */
+class Rest_Endpoints {
+
+	/**
+	 * The plugin settings.
+	 *
+	 * @access private
+	 * @var    Settings
+	 */
+	private $settings;
+
+	/**
+	 * The utils class.
+	 *
+	 * @access private
+	 * @var    Utils
+	 */
+	private $utils;
+
+	/**
+	 * An array of REST endpoints we want to register with WordPress.
+	 *
+	 * @access private
+	 * @var    array
+	 */
+	private $endpoints = array();
+
+	/**
+	 * API base path.
+	 *
+	 * @access private
+	 * @var string
+	 */
+	private $base_path = '{{pluginSlug}}';
+
+	/**
+	 * Constructor with settings.
+	 *
+	 * @access public
+	 * @param Settings      $settings The settings.
+	 */
+	public function __construct( Settings $settings, Utils $utils ) {
+		$this->settings      = $settings;
+		$this->utils         = $utils;
+
+		$this->define_hooks();
+	}
+
+	/**
+	 * Get the registered endpoints.
+	 *
+	 * @access public
+	 * @return array
+	 */
+	public function get_endpoints(): array {
+		return $this->endpoints;
+	}
+
+	/**
+	 * Get the API base path.
+	 *
+	 * @access public
+	 * @return array
+	 */
+	public function get_base_path(): string {
+		return $this->base_path;
+	}
+
+	/**
+	 * Register hooks.
+	 *
+	 * @access private
+	 */
+	private function define_hooks() {
+		add_action( 'rest_api_init', array( $this, 'register_all_endpoints' ) );
+	}
+
+	/**
+	 * Action-hooked method to register our rest endpoints, based on the available settings.
+	 *
+	 * @access public
+	 * @return void
+	 */
+	public function register_all_endpoints() {
+		$versions = $this->utils->get_available_versions();
+
+		foreach ( $versions as $version ) {
+			$this->load_endpoints_from_version( $version );
+		}
+
+		// Now let's just register each endpoint we considered above.
+		foreach ( $this->endpoints as $version => $version_endpoints ) {
+			foreach ( $version_endpoints as $endpoint ) {
+				$this->register_single_rest_endpoint( $version, $endpoint );
+			}
+		}
+	}
+
+
+	/**
+	 * Load endpoints from a specific version folder.
+	 *
+	 * @param string $version The version folder to load endpoints from.
+	 */
+	private function load_endpoints_from_version( $version ) {
+		$namespace = '{{namespaceEscaped pluginSlug}}\\Rest\\Endpoints\\' . $version;
+		$path      = plugin_dir_path( __FILE__ ) . 'Endpoints/' . $version;
+
+		foreach ( glob( $path . '/*.php' ) as $file ) {
+			$class_name      = $this->utils->convert_file_name_to_class_name( basename( $file, '.php' ) );
+			$full_class_name = $namespace . '\\' . $class_name;
+			if ( class_exists( $full_class_name ) ) {
+				if ( ! array_key_exists( $version, $this->endpoints ) ) {
+					$this->endpoints[ $version ] = array();
+				}
+
+				$this->endpoints[ $version ][] = new $full_class_name( $this->settings, $this->utils );
+			}
+		}
+	}
+
+	/**
+	 * Register a given $endpoint via register_rest_route().
+	 *
+	 * @param  string                       $version  The version of the endpoint.
+	 * @param  Endpoints\Interface_Endpoint $endpoint The endpoint to register.
+	 * @return void
+	 */
+	private function register_single_rest_endpoint( string $version, Endpoints\Interface_Endpoint $endpoint ) {
+		register_rest_route(
+			$this->base_path . '/' . strtolower( $version ),
+			$endpoint->get_path(),
+			array(
+				'args'                => $endpoint->get_arguments(),
+				'callback'            => $endpoint->get_callback(),
+				'methods'             => $endpoint->get_methods(),
+				'permission_callback' => $endpoint->get_permission_callback(),
+			)
+		);
+	}
+}

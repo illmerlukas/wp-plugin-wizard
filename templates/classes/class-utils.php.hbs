@@ -1,0 +1,68 @@
+<?php
+/**
+ * File for utility functions.
+ *
+ * @package     {{packageName pluginSlug}}
+ */
+
+namespace {{namespace pluginSlug}};
+
+/**
+ * Utils class for common functions.
+ */
+class Utils {
+
+	/**
+	 * Constructor.
+	 */
+	public function __construct() {
+		// Constructor.
+	}
+
+	/**
+	 * Convert a file name to a class name.
+	 *
+	 * @param string $file_name The file name.
+	 * @return string
+	 */
+	public function convert_file_name_to_class_name( string $file_name ): string {
+		$parts = explode( '-', $file_name );
+		$parts = array_map( 'ucfirst', $parts );
+		
+		return implode( '_', $parts );
+	}
+
+	/**
+	 * Get available API versions.
+	 *
+	 * @return array
+	 */
+	public function get_available_versions(): array {
+		$versions = array();
+		$path     = plugin_dir_path( __FILE__ ) . 'Rest/Endpoints';
+
+		if ( file_exists( $path ) && is_dir( $path ) ) {
+			$dirs = glob( $path . '/*', GLOB_ONLYDIR );
+			
+			foreach ( $dirs as $dir ) {
+				$versions[] = basename( $dir );
+			}
+		}
+
+		return $versions;
+	}
+
+	/**
+	 * Log a message to bugsnag.
+	 *
+	 * @access public
+	 * @param string $message The message to log.
+	 * @param mixed  $meta The meta data to log.
+	 * @param string $severity The severity of the message.
+	 */
+	public static function do_log( $message, $meta = null, $severity = null ): void {
+		$severity = empty( $severity ) ? 'info' : $severity;
+
+		do_action( 'nnp_log_message', '{{packageName pluginSlug}}', $message, $meta, $severity );
+	}
+}

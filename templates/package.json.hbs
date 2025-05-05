@@ -1,0 +1,16 @@
+{
+  "name": "{{pluginSlug}}",
+  "version": "0.1.0",
+  "description": "{{pluginDescription}}",
+  "author": "{{author}}",
+  "main": "index.js",
+  "license": "ISC",
+  "scripts": {
+    "start": "wp-scripts start",
+    "build": "wp-scripts build",
+    "lint:js": "wp-scripts lint-js",
+    "makepot": "wp i18n make-pot ./ lang/{{pluginSlug}}.pot",
+    "i18n": "wp i18n make-json lang/{{pluginSlug}}-de_DE.po --no-purge"
+  },
+  "devDependencies": {}
+}

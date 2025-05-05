@@ -1,0 +1,22 @@
+<?php
+/**
+ * Plugin Name: {{pluginName}}
+ * Plugin URI: {{pluginURI}}
+ * Description: {{pluginDescription}}
+ * Author: {{author}}
+ * Author URI: {{authorURI}}
+ * Text Domain: {{pluginSlug}}
+ * Version: 1.0.0
+ *
+ * @package {{packageName pluginSlug}}
+ */
+
+namespace {{namespace pluginSlug}};
+
+define( '{{constantCase pluginSlug}}_PLUGIN_BASEDIR', dirname( plugin_basename( __FILE__ ) ) );
+define( '{{constantCase pluginSlug}}_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+define( '{{constantCase pluginSlug}}_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+
+require_once {{constantCase pluginSlug}}_PLUGIN_DIR . 'classes/autoloader.php';
+
+new {{packageName pluginSlug}}();

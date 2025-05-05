@@ -1,0 +1,23 @@
+{
+  "name": "wp-plugin-wizard",
+  "version": "1.0.0",
+  "description": "Scaffold generator for WordPress plugins using Plop.js",
+  "main": "plopfile.js",
+  "type": "module",
+  "scripts": {
+    "plop": "plop"
+  },
+  "keywords": [
+    "wordpress",
+    "plugin",
+    "wizard",
+    "generator",
+    "plop"
+  ],
+  "author": "Lukas Illmer",
+  "license": "MIT",
+  "devDependencies": {
+    "chalk": "^5.4.1",
+    "plop": "^3.1.2"
+  }
+}
