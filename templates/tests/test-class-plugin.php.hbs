@@ -1,0 +1,98 @@
+<?php
+/**
+ * Class Plugin_Test
+ *
+ * @package {{packageName pluginSlug}}
+ */
+
+namespace {{namespace pluginSlug}}\Tests;
+
+use {{namespace pluginSlug}}\Plugin;
+use {{namespace pluginSlug}}\Utils;
+use {{namespace pluginSlug}}\Admin\Editor_Extensions;
+use {{namespace pluginSlug}}\Rest\Rest_Endpoints;
+use WP_Screen;
+
+/**
+ * Plugin test case.
+ */
+class Plugin_Test extends \WP_UnitTestCase {
+
+	/**
+	 * Plugin instance.
+	 *
+	 * @var Plugin
+	 */
+	private $plugin;
+
+	/**
+	 * Running before each test.
+	 *
+	 * @access public
+	 */
+	public function setUp(): void {
+		parent::setUp();
+
+		$this->plugin = new Plugin();
+	}
+
+	/**
+	 * Running after each test.
+	 *
+	 * @access public
+	 */
+	public function tearDown(): void {
+		$this->plugin = null;
+
+		parent::tearDown();
+	}
+
+
+	/**
+	 * Test if constructor works as expected.
+	 *
+	 * @access public
+	 */
+	public function test_constructor_works(): void {
+		$this->assertInstanceOf( Plugin::class, $this->plugin );
+	}
+
+	/**
+	 * Test if hooks are defined.
+	 *
+	 * @access public
+	 */
+	public function test_define_hooks(): void {
+		$this->assertNotFalse( has_action( 'plugins_loaded', array( $this->plugin, 'init' ) ) );
+	}
+
+	/**
+	 * Test if init works as expected if not admin page.
+	 */
+	public function test_init_works_is_not_admin(): void {
+		$this->plugin->init();
+
+		$this->assertEmpty( $this->plugin->editor_extensions );
+		$this->assertInstanceOf( Utils::class, $this->plugin->utils );
+		$this->assertInstanceOf( Rest_Endpoints::class, $this->plugin->rest_endpoints );
+	}
+
+	/**
+	 * Test if init works as expected if admin page.
+	 *
+	 * @access public
+	 */
+	public function test_init_works_is_admin(): void {
+		global $current_screen;
+
+		$current_screen = WP_Screen::get( 'admin_init' );
+
+		$this->plugin->init();
+
+		$this->assertInstanceOf( Editor_Extensions::class, $this->plugin->editor_extensions );
+		$this->assertInstanceOf( Utils::class, $this->plugin->utils );
+		$this->assertInstanceOf( Rest_Endpoints::class, $this->plugin->rest_endpoints );
+
+		$current_screen = null;
+	}
+}

@@ -41,6 +41,7 @@ export const logDryRunPreview = (plop, { pluginSlug }) => {
   const namespace = plop.getHelper('namespace')(pluginSlug);
   const namespaceEscaped = plop.getHelper('namespaceEscaped')(pluginSlug);
   const packageName = plop.getHelper('packageName')(pluginSlug);
+  const packageNameSlug = plop.getHelper('packageNameSlug')(pluginSlug);
 
   console.log(
     '\n' + chalk.blue.bold('------ SLUG TRANSFORMATION PREVIEW ------') + '\n'
@@ -51,6 +52,9 @@ export const logDryRunPreview = (plop, { pluginSlug }) => {
     chalk.bold('Namespace Escaped: ') + chalk.yellow(namespaceEscaped)
   );
   console.log(chalk.bold('Package Name:      ') + chalk.yellow(packageName));
+  console.log(
+    chalk.bold('Package Name Slug: ') + chalk.yellow(packageNameSlug)
+  );
   console.log(chalk.blue('-----------------------------------------'));
   console.log(''); // Empty line for spacing
 };
@@ -75,9 +79,10 @@ export const setupHelpers = (plop) => {
     return toPackageName(text);
   });
 
-  // "my-test-plugin" to "my/test/plugin"
+  // "my-test-plugin" to "my/test-plugin"
   plop.setHelper('packageNameSlug', function (text) {
-    return text.replace(/-/g, '/');
+    // Replace only the first hyphen with a slash
+    return text.replace(/-/, '/');
   });
 
   // Check if an array includes a value

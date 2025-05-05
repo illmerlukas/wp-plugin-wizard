@@ -7,7 +7,7 @@
 
 namespace {{namespace pluginSlug}}\Rest\Endpoints;
 
-use {{namespace pluginSlug}}\Settings;
+use {{namespace pluginSlug}}\Rest\Endpoints\Interface_Endpoint;
 use {{namespace pluginSlug}}\Utils;
 use WP_REST_Request;
 use WP_REST_Server;
@@ -16,14 +16,6 @@ use WP_REST_Server;
  * Base abstract class for our WordPress REST API Endpoints.
  */
 abstract class Abstract_Endpoint implements Interface_Endpoint {
-
-	/**
-	 * The plugin settings.
-	 *
-	 * @access protected
-	 * @var    Settings
-	 */
-	protected $settings;
 
 	/**
 	 * The utils.
@@ -67,17 +59,15 @@ abstract class Abstract_Endpoint implements Interface_Endpoint {
 
 
 	/**
-	 * Constructor with settings.
+	 * Constructor.
 	 *
 	 * @access public
-	 * @param Settings      $settings The settings.
-	 * @param Utils         $utils The utils.
+	 * @param Utils $utils The utils.
 	 *
 	 * @return void
 	 */
-	public function __construct( Settings $settings, Utils $utils ) {
-		$this->settings      = $settings;
-		$this->utils         = $utils;
+	public function __construct( Utils $utils ) {
+		$this->utils = $utils;
 	}
 
 	/**
@@ -118,9 +108,7 @@ abstract class Abstract_Endpoint implements Interface_Endpoint {
 	 * @return callable
 	 */
 	public function get_permission_callback() {
-		return function() {
-			return current_user_can( 'edit_posts' );
-		};
+		return '__return_true';
 	}
 
 	/**

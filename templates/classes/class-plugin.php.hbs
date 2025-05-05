@@ -7,26 +7,28 @@
 
 namespace {{namespace pluginSlug}};
 
-use {{namespace pluginSlug}}\Settings;
 {{#if restEndpoints}}
 use {{namespace pluginSlug}}\Rest;
-{{/if}}
 use {{namespace pluginSlug}}\Utils;
+{{/if}}
 
 /**
  * Core plugin.
  */
 class Plugin {
 
+	{{#if gutenberg}}
 	/**
-	 * The settings class.
+	 * The editor extensions class.
 	 *
 	 * @access public
-	 * @var    Settings  $settings  The settings class instance.
+	 * @var    Admin\Editor_Extensions  $editor_extensions  The editor extensions class instance.
 	 */
-	public $settings;
+	public $editor_extensions;
+	{{/if}}
 
-    /**
+	{{#if restEndpoints}}
+	/**
 	 * The utils class.
 	 *
 	 * @access public
@@ -34,7 +36,6 @@ class Plugin {
 	 */
 	public $utils;
 
-	{{#if restEndpoints}}
 	/**
 	 * The REST endpoints.
 	 *
@@ -48,8 +49,6 @@ class Plugin {
 	 * Constructor.
 	 */
 	public function __construct() {
-		$this->settings = new Settings();
-
 		$this->define_hooks();
 	}
 
@@ -70,9 +69,15 @@ class Plugin {
 	public function init() {
 		load_plugin_textdomain( '{{pluginSlug}}', false, {{constantCase pluginSlug}}_PLUGIN_BASEDIR . '/lang' );
 
-		$this->utils = new Utils();
+		{{#if gutenberg}}
+		if ( is_admin() ) {
+			$this->editor_extensions = new Admin\Editor_Extensions();
+		}
+		{{/if}}
+
 		{{#if restEndpoints}}
-		$this->rest_endpoints = new Rest\Rest_Endpoints( $this->settings, $this->utils );
+		$this->utils          = new Utils();
+		$this->rest_endpoints = new Rest\Rest_Endpoints( $this->utils );
 		{{/if}}
 	}
 }

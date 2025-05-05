@@ -1,0 +1,120 @@
+<?php
+/**
+ * Example Endpoint test
+ *
+ * @package {{packageName pluginSlug}}
+ */
+
+namespace {{namespace pluginSlug}}\Tests\Rest\Endpoints\V1;
+
+use {{namespace pluginSlug}}\Rest\Endpoints\V1\Get_Example;
+use {{namespace pluginSlug}}\Rest\Rest_Endpoints;
+use {{namespace pluginSlug}}\Utils;
+use WP_REST_Server;
+use WP_REST_Request;
+
+/**
+ * Rest Example test case.
+ */
+class Get_Example_Test extends \WP_UnitTestCase {
+	/**
+	 * An instance of the example class we want to test.
+	 *
+	 * @access private
+	 * @var Example
+	 */
+	private $class_instance;
+
+	/**
+	 * An instance of the rest endpoints class.
+	 *
+	 * @access private
+	 * @var Rest_Endpoints
+	 */
+	private $class_rest_endpoints;
+
+	/**
+	 * The utils class.
+	 *
+	 * @access private
+	 * @var Utils
+	 */
+	private $class_utils;
+
+	/**
+	 * WP REST Server.
+	 *
+	 * @access private
+	 * @var WP_REST_Server
+	 */
+	public $server;
+
+	/**
+	 * Rest Request.
+	 *
+	 * @access private
+	 * @var WP_REST_Request
+	 */
+	public $request;
+
+	/**
+	 * Running before each test.
+	 *
+	 * @access public
+	 * @return void
+	 */
+	public function setUp(): void {
+		parent::setUp();
+
+		$this->class_utils          = new Utils();
+		$this->class_rest_endpoints = new Rest_Endpoints( $this->class_utils );
+
+		$this->class_instance = new Get_Example( $this->class_utils );
+
+		// set current user.
+		wp_set_current_user( 1 );
+
+		global $wp_rest_server;
+		$wp_rest_server = new WP_REST_Server();
+		$this->server   = $wp_rest_server;
+		do_action( 'rest_api_init' );
+
+		$this->request = new WP_REST_Request( $this->class_instance->get_methods(), "/{$this->class_rest_endpoints->get_base_path()}/v1/{$this->class_instance->get_path()}" );
+	}
+
+	/**
+	 * Running after each test.
+	 *
+	 * @access public
+	 * @return void
+	 */
+	public function tearDown(): void {
+		$this->class_instance       = null;
+		$this->class_rest_endpoints = null;
+		$this->class_utils          = null;
+		$this->server               = null;
+		$this->request              = null;
+
+		wp_set_current_user( 0 );
+
+		parent::tearDown();
+	}
+
+	/**
+	 * Test respond method with valid response.
+	 *
+	 * @access public
+	 * @return void
+	 */
+	public function test_respond_valid_response(): void {
+		$this->request->set_param( 'foo', 'some-input' );
+
+		$response = $this->class_instance->respond( $this->request );
+		$status   = $response->get_status();
+		$data     = $response->get_data();
+
+		$this->assertEquals( 200, $status );
+		$this->assertEquals( 'some-input', $data->data['input'] );
+		$this->assertEquals( 'Hello World', $data->data['message'] );
+	}
+}

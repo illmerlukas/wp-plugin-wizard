@@ -8,21 +8,12 @@
 namespace {{namespace pluginSlug}}\Rest;
 
 use {{namespace pluginSlug}}\Rest\Endpoints;
-use {{namespace pluginSlug}}\Settings;
 use {{namespace pluginSlug}}\Utils;
 
 /**
  * The plugins rest routes.
  */
 class Rest_Endpoints {
-
-	/**
-	 * The plugin settings.
-	 *
-	 * @access private
-	 * @var    Settings
-	 */
-	private $settings;
 
 	/**
 	 * The utils class.
@@ -49,14 +40,13 @@ class Rest_Endpoints {
 	private $base_path = '{{pluginSlug}}';
 
 	/**
-	 * Constructor with settings.
+	 * Constructor.
 	 *
 	 * @access public
-	 * @param Settings      $settings The settings.
+	 * @param Utils $utils The utils class.
 	 */
-	public function __construct( Settings $settings, Utils $utils ) {
-		$this->settings      = $settings;
-		$this->utils         = $utils;
+	public function __construct( Utils $utils ) {
+		$this->utils = $utils;
 
 		$this->define_hooks();
 	}
@@ -91,7 +81,7 @@ class Rest_Endpoints {
 	}
 
 	/**
-	 * Action-hooked method to register our rest endpoints, based on the available settings.
+	 * Action-hooked method to register our rest endpoints, based on the available versions..
 	 *
 	 * @access public
 	 * @return void
@@ -129,7 +119,7 @@ class Rest_Endpoints {
 					$this->endpoints[ $version ] = array();
 				}
 
-				$this->endpoints[ $version ][] = new $full_class_name( $this->settings, $this->utils );
+				$this->endpoints[ $version ][] = new $full_class_name( $this->utils );
 			}
 		}
 	}

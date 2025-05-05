@@ -13,43 +13,41 @@ namespace {{namespace pluginSlug}};
 class Utils {
 
 	/**
-	 * Constructor.
-	 */
-	public function __construct() {
-		// Constructor.
-	}
-
-	/**
-	 * Convert a file name to a class name.
+	 * Get available versions based on the folders.
 	 *
-	 * @param string $file_name The file name.
-	 * @return string
-	 */
-	public function convert_file_name_to_class_name( string $file_name ): string {
-		$parts = explode( '-', $file_name );
-		$parts = array_map( 'ucfirst', $parts );
-		
-		return implode( '_', $parts );
-	}
-
-	/**
-	 * Get available API versions.
-	 *
-	 * @return array
+	 * @access public
+	 * @return array The available versions.
 	 */
 	public function get_available_versions(): array {
-		$versions = array();
-		$path     = plugin_dir_path( __FILE__ ) . 'Rest/Endpoints';
-
-		if ( file_exists( $path ) && is_dir( $path ) ) {
-			$dirs = glob( $path . '/*', GLOB_ONLYDIR );
-			
-			foreach ( $dirs as $dir ) {
-				$versions[] = basename( $dir );
-			}
-		}
+		$directories = $this->glob( {{constantCase pluginSlug}}_PLUGIN_DIR . 'classes/Rest/Endpoints/V*', GLOB_ONLYDIR );
+		$versions    = array_map( 'basename', $directories );
 
 		return $versions;
+	}
+
+	/**
+	 * Wrapper for the glob function to allow mocking in tests.
+	 *
+	 * @access protected
+	 * @param string $pattern The pattern.
+	 * @param mixed  $flags The flags.
+	 * @return array
+	 */
+	protected function glob( string $pattern, $flags = 0 ): array {
+		return glob( $pattern, $flags ) ?? array();
+	}
+
+	/**
+	 * Convert file name to class name.
+	 *
+	 * @access public
+	 * @param string $file_name The file name to convert.
+	 * @return string The converted class name.
+	 */
+	public function convert_file_name_to_class_name( string $file_name ): string {
+		// Remove 'class-' prefix and convert to CamelCase.
+		$class_name = str_replace( ' ', '_', ucwords( str_replace( '-', ' ', str_replace( 'class-', '', $file_name ) ) ) );
+		return $class_name;
 	}
 
 	/**
@@ -63,6 +61,6 @@ class Utils {
 	public static function do_log( $message, $meta = null, $severity = null ): void {
 		$severity = empty( $severity ) ? 'info' : $severity;
 
-		do_action( 'nnp_log_message', '{{packageName pluginSlug}}', $message, $meta, $severity );
+		do_action( 'nnp_log_message', '{{properCase pluginSlug}}', $message, $meta, $severity );
 	}
 }

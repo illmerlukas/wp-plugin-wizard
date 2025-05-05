@@ -1,0 +1,88 @@
+<?php
+/**
+ * Rest endpoints test
+ *
+ * @package {{packageName pluginSlug}}
+ */
+
+namespace {{namespace pluginSlug}}\Tests\Rest;
+
+use {{namespace pluginSlug}}\Rest\Rest_Endpoints;
+use {{namespace pluginSlug}}\Utils;
+
+/**
+ * Rest endpoints test case.
+ */
+class Rest_Endpoints_Test extends \WP_UnitTestCase {
+
+	/**
+	 * An instance of the rest endpoints class we want to test.
+	 *
+	 * @access public
+	 * @var Rest\Rest_Endpoints
+	 */
+	private $class_instance;
+
+	/**
+	 * The utils class.
+	 *
+	 * @access private
+	 * @var Utils
+	 */
+	private $class_utils;
+
+	/**
+	 * Running before each test.
+	 *
+	 * @access public
+	 * @return void
+	 */
+	public function setUp(): void {
+		parent::setUp();
+
+		$this->class_utils    = new Utils();   
+		$this->class_instance = new Rest_Endpoints( $this->class_utils );
+	}
+
+	/**
+	 * Running after each test.
+	 *
+	 * @access public
+	 * @return void
+	 */
+	public function tearDown(): void {
+		$this->class_instance = null;
+		$this->class_utils    = null;
+
+		parent::tearDown();
+	}
+
+	/**
+	 * Testing that the rest_api_init action is added.
+	 *
+	 * @access public
+	 * @return void
+	 */
+	public function test_rest_api_init_action_is_added(): void {
+		$this->assertNotFalse( has_action( 'rest_api_init', array( $this->class_instance, 'register_all_endpoints' ) ) );
+	}
+
+	/**
+	 * Testing that the rest endpoints are registered.
+	 *
+	 * @access public
+	 * @return void
+	 */
+	public function test_rest_endpoints_are_registered(): void {
+		do_action( 'rest_api_init' );
+		$routes = rest_get_server()->get_routes();
+
+		$endpoints = $this->class_instance->get_endpoints();
+
+		foreach ( $endpoints as $version => $version_endpoints ) {
+			foreach ( $version_endpoints as $endpoint ) {
+				$this->assertArrayHasKey( "/{$this->class_instance->get_base_path()}/v1/{$endpoint->get_path()}", $routes );
+			}
+		}
+	}
+}

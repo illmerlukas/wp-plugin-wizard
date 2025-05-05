@@ -16,7 +16,7 @@ const installNpmDependencies = (pluginSlug, dependencies = []) => {
     const pluginPath = path.resolve(process.cwd(), pluginSlug);
 
     exec(
-      `npm i --save-dev ${dependencies.join(' ')}`,
+      `npm i --save-dev ${dependencies.join(' ')} && npm run build`,
       { cwd: pluginPath },
       (error, stdout, stderr) => {
         if (error) {
@@ -46,7 +46,9 @@ const setupActionTypes = (plop) => {
       return 'Skipping npm install in dry run mode';
     }
 
-    return installNpmDependencies(answers.pluginSlug, ['@wordpress/scripts'])
+    const dependencies = ['@wordpress/scripts@27.9.0', '@wordpress/icons'];
+
+    return installNpmDependencies(answers.pluginSlug, dependencies)
       .then(() => chalk.green('✅ NPM dependencies installed successfully'))
       .catch((err) => {
         console.error(err);

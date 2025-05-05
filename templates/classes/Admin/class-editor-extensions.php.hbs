@@ -7,43 +7,30 @@
 
 namespace {{namespace pluginSlug}}\Admin;
 
-use {{namespace pluginSlug}}\Settings;
-
 /**
  * Editor Extensions.
  */
 class Editor_Extensions {
-
-	/**
-	 * The plugin settings class.
-	 *
-	 * @var Settings
-	 */
-	private $settings;
-
+	
 	/**
 	 * The handle for the block.
 	 *
 	 * @var string
 	 */
-	private $handle = '{{snakeCase pluginSlug}}';
+	public $handle = '{{snakeCase pluginSlug}}';
 
 	/**
-	 * Constructor - initialize the settings and define (admin) hooks for handling the settings page.
-	 *
-	 * @param Settings $settings The settings.
+	 * Constructor.
 	 *
 	 * @access public
 	 * @return void
 	 */
-	public function __construct( Settings $settings ) {
-		$this->settings = $settings;
-
+	public function __construct() {
 		$this->define_hooks();
 	}
 
 	/**
-	 * Define hooks for registering our settings and the options page.
+	 * Define hooks.
 	 *
 	 * @access public
 	 * @return void

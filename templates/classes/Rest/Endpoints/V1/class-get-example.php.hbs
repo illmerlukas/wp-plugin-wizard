@@ -8,7 +8,7 @@
 namespace {{namespace pluginSlug}}\Rest\Endpoints\V1;
 
 use {{namespace pluginSlug}}\Rest\Endpoints\Abstract_Endpoint;
-
+use {{namespace pluginSlug}}\Utils;
 use stdClass;
 use WP_Error;
 use WP_REST_Request;
@@ -45,25 +45,22 @@ class Get_Example extends Abstract_Endpoint {
 	protected $path = 'example';
 
 	/**
-	 * Constructor with settings.
+	 * Constructor.
 	 *
 	 * @access public
-	 * @param Settings      $settings The settings.
-	 * @param Media_Upload  $media_upload The upload image class.
-	 * @param Utils         $utils The utils.
-	 * @param API_Connector $api_connector The API connector.
-	 * @param Scheduler     $scheduler The scheduler class.
-	 * @param Log_Provider  $log_provider The log provider.
+	 * @param Utils $utils The utils.
 	 *
 	 * @return void
 	 */
-	public function __construct( Settings $settings, Utils $utils ) {
-		parent::__construct( $settings, $utils );
+	public function __construct( Utils $utils ) {
+		parent::__construct( $utils );
 
 		$this->arguments = array(
-			'term'  => array(
-				'type'     => 'string',
+			'foo'  => array(
 				'required' => true,
+				'validate_callback' => function( $param ) {
+					return is_string( $param );
+				},
 			),
 		);
 	}
@@ -80,7 +77,7 @@ class Get_Example extends Abstract_Endpoint {
 		$result         = new stdClass();
 		$result->status = 'ok';
 		$result->data   = array(
-			'term'    => $parameters['term'] ?? 'no term',
+			'input'   => $parameters['foo'],
 			'message' => 'Hello World',
 		);
 

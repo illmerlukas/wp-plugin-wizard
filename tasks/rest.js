@@ -23,6 +23,7 @@ export const actions = (data) => {
     {
       type: 'add',
       path: '{{pluginSlug}}/classes/Rest/class-rest-endpoints.php',
+      templateFile: 'templates/classes/Rest/class-rest-endpoints.php.hbs',
     },
     {
       type: 'add',
@@ -32,9 +33,32 @@ export const actions = (data) => {
     },
     {
       type: 'add',
+      path: '{{pluginSlug}}/classes/Rest/Endpoints/class-abstract-endpoint.php',
+      templateFile:
+        'templates/classes/Rest/Endpoints/class-abstract-endpoint.php.hbs',
+    },
+    {
+      type: 'add',
       path: '{{pluginSlug}}/classes/Rest/Endpoints/interface-endpoint.php',
       templateFile:
         'templates/classes/Rest/Endpoints/interface-endpoint.php.hbs',
+    },
+    // Test files
+    {
+      type: 'add',
+      path: '{{pluginSlug}}/tests/test-class-utils.php',
+      templateFile: 'templates/tests/test-class-utils.php.hbs',
+    },
+    {
+      type: 'add',
+      path: '{{pluginSlug}}/tests/Rest/test-class-rest-endpoints.php',
+      templateFile: 'templates/tests/Rest/test-class-rest-endpoints.php.hbs',
+    },
+    {
+      type: 'add',
+      path: '{{pluginSlug}}/tests/Rest/Endpoints/V1/test-class-get-example.php',
+      templateFile:
+        'templates/tests/Rest/Endpoints/V1/test-class-get-example.php.hbs',
     },
   ];
 };

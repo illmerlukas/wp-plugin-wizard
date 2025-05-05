@@ -1,3 +1,5 @@
+import fs from 'fs';
+
 /**
  * Plugin base prompts
  */
@@ -6,13 +8,16 @@ export const prompts = [
     type: 'input',
     name: 'pluginSlug',
     message: 'Plugin slug (e.g., my-awesome-plugin):',
-    default: 'russmedia-test-plugin',
+    default: 'my-awesome-plugin',
   },
   {
     type: 'input',
     name: 'pluginName',
-    message: 'Plugin name (e.g., My Awesome Plugin):',
-    default: 'Russmedia Test Plugin',
+    message: 'Plugin name:',
+    default: (data) =>
+      data.pluginSlug
+        .replace(/-/g, ' ')
+        .replace(/\b\w/g, (char) => char.toUpperCase()),
   },
   {
     type: 'input',
@@ -30,7 +35,7 @@ export const prompts = [
     type: 'input',
     name: 'authorURI',
     message: 'Author URI:',
-    default: 'https://russmedia.com',
+    default: 'https://example.com',
   },
 ];
 
@@ -58,6 +63,11 @@ export const actions = (data) => {
     },
     {
       type: 'add',
+      path: '{{pluginSlug}}/composer.json',
+      templateFile: 'templates/composer.json.hbs',
+    },
+    {
+      type: 'add',
       path: '{{pluginSlug}}/classes/autoloader.php',
       templateFile: 'templates/classes/autoloader.php.hbs',
     },
@@ -68,11 +78,6 @@ export const actions = (data) => {
     },
     {
       type: 'add',
-      path: '{{pluginSlug}}/classes/class-settings.php',
-      templateFile: 'templates/classes/class-settings.php.hbs',
-    },
-    {
-      type: 'add',
       path: '{{pluginSlug}}/classes/class-plugin.php',
       templateFile: 'templates/classes/class-plugin.php.hbs',
     },
@@ -80,6 +85,36 @@ export const actions = (data) => {
       type: 'add',
       path: '{{pluginSlug}}/lang/{{pluginSlug}}-de_DE.po',
       templateFile: 'templates/lang/lang-de_DE.po.hbs',
+    },
+    // Test files
+    {
+      type: 'add',
+      path: '{{pluginSlug}}/bin/install-wp-tests.sh',
+      templateFile: 'templates/bin/install-wp-tests.sh',
+    },
+    {
+      type: 'modify',
+      path: '{{pluginSlug}}/bin/install-wp-tests.sh',
+      transform: (content) => {
+        // Make the file executable
+        fs.chmodSync(data.pluginSlug + '/bin/install-wp-tests.sh', '0755');
+        return content;
+      },
+    },
+    {
+      type: 'add',
+      path: '{{pluginSlug}}/tests/bootstrap.php',
+      templateFile: 'templates/tests/bootstrap.php.hbs',
+    },
+    {
+      type: 'add',
+      path: '{{pluginSlug}}/phpunit.xml.dist',
+      templateFile: 'templates/phpunit.xml.dist.hbs',
+    },
+    {
+      type: 'add',
+      path: '{{pluginSlug}}/tests/test-class-plugin.php',
+      templateFile: 'templates/tests/test-class-plugin.php.hbs',
     },
   ];
 };

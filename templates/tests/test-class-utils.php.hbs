@@ -1,0 +1,80 @@
+<?php
+/**
+ * Class Utils_Test
+ *
+ * @package {{packageName pluginSlug}}
+ */
+
+namespace {{namespace pluginSlug}}\Tests;
+
+use {{namespace pluginSlug}}\Utils;
+
+/**
+ * Utils test case.
+ */
+class Utils_Test extends \WP_UnitTestCase {
+
+	/**
+	 * Utils instance.
+	 *
+	 * @access private
+	 * @var Utils
+	 */
+	private $utils;
+
+	/**
+	 * Set up the test environment.
+	 *
+	 * @access public
+	 * @return void
+	 */
+	public function setUp(): void {
+		parent::setUp();
+
+		// Initialize Utils instance.
+		$this->utils = new Utils();
+	}
+
+	/**
+	 * Test get_available_versions method.
+	 *
+	 * @access public
+	 * @return void
+	 */
+	public function test_get_available_versions(): void {
+		// Mock the directory structure.
+		$mocked_versions = array( 'V1', 'V2' );
+		$mocked_paths    = array_map(
+			function( $version ) {
+				return {{constantCase pluginSlug}}_PLUGIN_DIR . 'classes/Rest/Endpoints/' . $version;
+			},
+			$mocked_versions
+		);
+
+		// Mock the glob function .
+		$utils = $this->getMockBuilder( Utils::class )
+		->setMethods( array( 'glob' ) )
+		->getMock();
+
+		$utils->method( 'glob' )
+		->willReturn( $mocked_paths );
+
+		// Call the method and assert the results .
+		$versions = $utils->get_available_versions();
+		$this->assertEquals( $mocked_versions, $versions );
+	}
+
+	/**
+	 * Test convert_file_name_to_class_name method.
+	 *
+	 * @access public
+	 * @return void
+	 */
+	public function test_convert_file_name_to_class_name(): void {
+		$file_name           = 'class-sample-file';
+		$expected_class_name = 'Sample_File';
+
+		$class_name = $this->utils->convert_file_name_to_class_name( $file_name );
+		$this->assertEquals( $expected_class_name, $class_name );
+	}
+}

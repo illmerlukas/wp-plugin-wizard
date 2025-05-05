@@ -1,0 +1,194 @@
+<?php
+
+/**
+ * Class Editor_Extensions_Test
+ *
+ * @package {{packageName pluginSlug}}
+ */
+
+namespace {{namespace pluginSlug}}\Tests\Admin;
+
+use {{namespace pluginSlug}}\Admin\Editor_Extensions;
+use stdClass;
+use WP_Block_Type_Registry;
+
+/**
+ * Editor_Extensions test case.
+ */
+class Editor_Extensions_Test extends \WP_UnitTestCase {
+
+	/**
+	 * The class instance.
+	 *
+	 * @access private
+	 * @var Editor_Extensions|null
+	 */
+	private $class = null;
+
+	/**
+	 * Running before each test.
+	 *
+	 * @access public
+	 * @return void
+	 */
+	public function setUp(): void {
+		parent::setUp();
+
+		$this->class = new Editor_Extensions();
+	}
+
+	/**
+	 * Running after each test.
+	 *
+	 * @access public
+	 * @return void
+	 */
+	public function tearDown(): void {
+		$this->class = null;
+
+		set_current_screen( '' );
+
+		parent::tearDown();
+	}
+
+	/**
+	 * Test if constructor works as expected.
+	 *
+	 * @access public
+	 * @return void
+	 */
+	public function test_define_hooks(): void {
+		$this->assertNotFalse( has_action( 'enqueue_block_editor_assets', array( $this->class, 'enqueue_assets' ) ) );
+		$this->assertNotFalse( has_action( 'init', array( $this->class, 'register_block_types' ) ) );
+		$this->assertNotFalse( has_action( 'block_categories_all', array( $this->class, 'add_new_block_category' ) ) );
+	}
+
+	/**
+	 * Test if enqueue_assets should not enqueue assets if not in post editor.
+	 *
+	 * @return void
+	 */
+	public function test_do_not_enqueue_assets_if_not_in_post_editor(): void {
+		$this->class->enqueue_assets();
+
+		$this->assertFalse( wp_style_is( $this->class->handle ) );
+		$this->assertFalse( wp_script_is( $this->class->handle ) );
+	}
+
+	/**
+	 * Test if enqueue_assets works as expected.
+	 *
+	 * @return void
+	 */
+	public function test_enqueue_assets_post(): void {
+		set_current_screen( 'post' );
+
+		$this->class->enqueue_assets();
+
+		$this->assertTrue( wp_style_is( $this->class->handle ) );
+		$this->assertTrue( wp_script_is( $this->class->handle ) );
+	}
+
+	/**
+	 * Test if enqueue_assets works as expected.
+	 *
+	 * @return void
+	 */
+	public function test_enqueue_assets_page(): void {
+		set_current_screen( 'page' );
+
+		$this->class->enqueue_assets();
+
+		$this->assertTrue( wp_style_is( $this->class->handle ) );
+		$this->assertTrue( wp_script_is( $this->class->handle ) );
+	}
+
+	/**
+	 * Test if add_new_block_category returns early with given categories if context is missing.
+	 *
+	 * @access public
+	 * @return void
+	 */
+	public function test_add_new_block_category_returns_early_if_context_is_missing(): void {
+		$categories = array(
+			array(
+				'slug'  => 'some category',
+				'title' => 'Some Category',
+				'icon'  => 'wordpress',
+			),
+		);
+
+		$new_categories = $this->class->add_new_block_category( $categories, null );
+
+		$this->assertEquals( $categories, $new_categories );
+	}
+
+	/**
+	 * Test if add_new_block_category returns early if a given block category slug is already registered.
+	 *
+	 * @access public
+	 * @return void
+	 */
+	public function test_add_new_block_category_returns_early_if_category_slug_is_already_registered(): void {
+		$categories = array(
+			array(
+				'slug'  => '{{blockCategory}}',
+				'title' => '{{blockCategory}}',
+				'icon'  => 'wordpress',
+			),
+		);
+
+		$block_editor_context                  = new stdClass();
+		$block_editor_context->post            = new stdClass();
+		$block_editor_context->post->post_type = 'post';
+
+		$new_categories = $this->class->add_new_block_category( $categories, $block_editor_context );
+
+		$this->assertEquals( $categories, $new_categories );
+	}
+
+	/**
+	 * Test if add_new_block_category works as expected.
+	 *
+	 * @access public
+	 * @return void
+	 */
+	public function test_add_new_block_category(): void {
+		$categories = array(
+			array(
+				'slug'  => 'some category',
+				'title' => 'Some Category',
+				'icon'  => 'wordpress',
+			),
+		);
+
+		$expected_result   = $categories;
+		$expected_result[] = array(
+			'slug'  => '{{blockCategory}}',
+			'title' => esc_html__( '{{blockCategory}}', '{{pluginSlug}}' ),
+			'icon'  => 'wordpress',
+		);
+
+		$block_editor_context                  = new stdClass();
+		$block_editor_context->post            = new stdClass();
+		$block_editor_context->post->post_type = 'post';
+
+		$categories = $this->class->add_new_block_category( $categories, $block_editor_context );
+
+		$this->assertEquals( $expected_result, $categories );
+	}
+
+	/**
+	 * Test if register_block_types works as expected.
+	 *
+	 * @access public
+	 * @return void
+	 */
+	public function test_register_block_types(): void {
+		$this->class->register_block_types();
+
+		// check if block is registered.
+		$this->assertTrue( WP_Block_Type_Registry::get_instance()->is_registered( '{{blockCategory}}/{{blockSlug}}' ) );
+	}
+
+}

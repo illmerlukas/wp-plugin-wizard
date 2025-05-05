@@ -42,7 +42,7 @@ export const prompts = [
     type: 'input',
     name: 'gutenbergPluginSlug',
     message: 'Enter the slug for the gutenberg plugin:',
-    default: 'example-plugin',
+    default: 'awesome-plugin',
     when: (answers) => answers.gutenbergFeatures.includes('Meta Box'),
   },
 ];
@@ -77,6 +77,13 @@ export const actions = (data) => {
     templateFile: 'templates/classes/Admin/class-editor-extensions.php.hbs',
   });
 
+  // Test files
+  actions.push({
+    type: 'add',
+    path: '{{pluginSlug}}/tests/Admin/test-class-editor-extensions.php',
+    templateFile: 'templates/tests/Admin/test-class-editor-extensions.php.hbs',
+  });
+
   if (data.gutenbergFeatures.includes('Block')) {
     actions.push({
       type: 'add',
@@ -86,14 +93,14 @@ export const actions = (data) => {
 
     actions.push({
       type: 'add',
-      path: '{{pluginSlug}}/src/blocks/{{blockSlug}}/index.js',
-      templateFile: 'templates/src/blocks/[block]/index.js.hbs',
+      path: '{{pluginSlug}}/src/blocks/{{blockSlug}}/index.jsx',
+      templateFile: 'templates/src/blocks/[block]/index.jsx.hbs',
     });
 
     actions.push({
       type: 'add',
-      path: '{{pluginSlug}}/src/blocks/{{blockSlug}}/edit.js',
-      templateFile: 'templates/src/blocks/[block]/edit.js.hbs',
+      path: '{{pluginSlug}}/src/blocks/{{blockSlug}}/edit.jsx',
+      templateFile: 'templates/src/blocks/[block]/edit.jsx.hbs',
     });
 
     actions.push({
@@ -112,20 +119,20 @@ export const actions = (data) => {
   if (data.gutenbergFeatures.includes('Meta Box')) {
     actions.push({
       type: 'add',
-      path: '{{pluginSlug}}/src/plugins/{{gutenbergPluginSlug}}/index.js',
-      templateFile: 'templates/src/plugins/[plugin]/index.js.hbs',
+      path: '{{pluginSlug}}/src/plugins/{{gutenbergPluginSlug}}/index.jsx',
+      templateFile: 'templates/src/plugins/[plugin]/index.jsx.hbs',
     });
 
     actions.push({
       type: 'add',
-      path: '{{pluginSlug}}/src/plugins/{{gutenbergPluginSlug}}/edit.js',
-      templateFile: 'templates/src/plugins/[plugin]/edit.js.hbs',
+      path: '{{pluginSlug}}/src/plugins/{{gutenbergPluginSlug}}/edit.jsx',
+      templateFile: 'templates/src/plugins/[plugin]/edit.jsx.hbs',
     });
 
     actions.push({
       type: 'add',
       path: '{{pluginSlug}}/src/plugins/{{gutenbergPluginSlug}}/editor.scss',
-      templateFile: 'templates/src/plugins/[plugin]/editor.scss',
+      templateFile: 'templates/src/plugins/[plugin]/editor.scss.hbs',
     });
 
     actions.push({

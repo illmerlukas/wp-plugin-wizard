@@ -18,6 +18,9 @@
 		</include>
 		<exclude>
 			<file>./classes/autoloader.php</file>
+			{{#if restEndpoints}}
+			<file>./classes/Rest/Endpoints/interface-endpoint.php</file>
+			{{/if}}
 		</exclude>
 		<report>
 			<html outputDirectory="tests/coverage-report" lowUpperBound="50" highLowerBound="90" />
